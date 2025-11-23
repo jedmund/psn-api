@@ -1,19 +1,16 @@
-import { rest } from "msw";
-import { setupServer } from "msw/node";
+import nock from "nock";
 
 import type {
   AuthorizationPayload,
   ProfileFromUserNameResponse
 } from "../models";
 import { getProfileFromUserName } from "./getProfileFromUserName";
-
-const server = setupServer();
+import { USER_LEGACY_BASE_URL } from "./USER_BASE_URL";
 
 describe("Function: getProfileFromUserName", () => {
-  // MSW Setup
-  beforeAll(() => server.listen());
-  afterEach(() => server.resetHandlers());
-  afterAll(() => server.close());
+  afterEach(() => {
+    nock.cleanAll();
+  });
 
   it("is defined #sanity", () => {
     // ASSERT
@@ -57,15 +54,14 @@ describe("Function: getProfileFromUserName", () => {
         consoleAvailability: { availabilityStatus: "offline" }
       }
     };
+    const baseUrlObj = new URL(USER_LEGACY_BASE_URL);
+    const baseUrl = `${baseUrlObj.protocol}//${baseUrlObj.host}`;
+    const basePath = baseUrlObj.pathname;
 
-    server.use(
-      rest.get(
-        "https://us-prof.np.community.playstation.net/userProfile/v1/users/xelnia/profile2",
-        (_, res, ctx) => {
-          return res(ctx.json(mockResponse));
-        }
-      )
-    );
+    nock(baseUrl)
+      .get(`${basePath}/xelnia/profile2`)
+      .query(true)
+      .reply(200, mockResponse);
 
     // ACT
     const response = await getProfileFromUserName(mockAuthorization, "xelnia");
@@ -83,15 +79,14 @@ describe("Function: getProfileFromUserName", () => {
     const mockResponse = {
       error: { code: 2_105_356, message: "User not found (user: 'xeln12ia')" }
     };
+    const baseUrlObj = new URL(USER_LEGACY_BASE_URL);
+    const baseUrl = `${baseUrlObj.protocol}//${baseUrlObj.host}`;
+    const basePath = baseUrlObj.pathname;
 
-    server.use(
-      rest.get(
-        "https://us-prof.np.community.playstation.net/userProfile/v1/users/xeln12ia/profile2",
-        (_, res, ctx) => {
-          return res(ctx.json(mockResponse));
-        }
-      )
-    );
+    nock(baseUrl)
+      .get(`${basePath}/xeln12ia/profile2`)
+      .query(true)
+      .reply(200, mockResponse);
 
     // ASSERT
     await expect(

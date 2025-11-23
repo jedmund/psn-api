@@ -17,8 +17,8 @@ import fs from "fs";
 
 import type { Trophy } from "psn-api";
 import {
-  exchangeCodeForAccessToken,
-  exchangeNpssoForCode,
+  exchangeAccessCodeForAuthTokens,
+  exchangeNpssoForAccessCode,
   getTitleTrophies,
   getUserTitles,
   getUserTrophiesEarnedForTitle,
@@ -29,8 +29,8 @@ import {
 async function main() {
   // 1. Authenticate and become authorized with PSN.
   // See the Authenticating Manually docs for how to get your NPSSO.
-  const accessCode = await exchangeNpssoForCode(process.env["NPSSO"]);
-  const authorization = await exchangeCodeForAccessToken(accessCode);
+  const accessCode = await exchangeNpssoForAccessCode(process.env["NPSSO"]);
+  const authorization = await exchangeAccessCodeForAuthTokens(accessCode);
 
   // 2. Get the user's `accountId` from the username.
   const allAccountsSearchResults = await makeUniversalSearch(
@@ -54,8 +54,9 @@ async function main() {
       title.npCommunicationId,
       "all",
       {
-        npServiceName:
-          title.trophyTitlePlatform !== "PS5" ? "trophy" : undefined
+        npServiceName: title.trophyTitlePlatform.includes("PS5")
+          ? undefined
+          : "trophy"
       }
     );
 
@@ -66,8 +67,9 @@ async function main() {
       title.npCommunicationId,
       "all",
       {
-        npServiceName:
-          title.trophyTitlePlatform !== "PS5" ? "trophy" : undefined
+        npServiceName: title.trophyTitlePlatform.includes("PS5")
+          ? undefined
+          : "trophy"
       }
     );
 

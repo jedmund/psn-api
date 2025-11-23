@@ -20,14 +20,6 @@
   <a href="https://github.com/semantic-release/semantic-release">
     <img src="https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-semantic--release-e10079.svg" alt="Semantic Release" />
   </a>
-
-  <a href="https://codeclimate.com/github/achievements-app/psn-api/maintainability">
-    <img src="https://api.codeclimate.com/v1/badges/0722cac09757ab9dc67b/maintainability" />
-  </a>
-
-  <a href="https://codeclimate.com/github/achievements-app/psn-api/test_coverage">
-    <img src="https://api.codeclimate.com/v1/badges/0722cac09757ab9dc67b/test_coverage" />
-  </a>
 </p>
 
 <hr />
@@ -45,7 +37,7 @@
 
 ## Documentation
 
-Learn how to authenticate and start pulling data from the PlayStation Network on our documentation website.
+Learn how to authenticate and start fetching data from the PlayStation Network on our documentation website.
 
 - [Get started](https://psn-api.achievements.app/get-started)
 - [How to authenticate](https://psn-api.achievements.app/authentication/authenticating-manually)
@@ -83,16 +75,16 @@ If you see an error response, try using different browser.
 const myNpsso = "<64 character token>";
 
 // We'll exchange your NPSSO for a special access code.
-const accessCode = await exchangeNpssoForCode(myNpsso);
+const accessCode = await exchangeNpssoForAccessCode(myNpsso);
 
 // We can use the access code to get your access token and refresh token.
-const authorization = await exchangeCodeForAccessToken(accessCode);
+const authorization = await exchangeAccessCodeForAuthTokens(accessCode);
 ```
 
 4. You should now be all set to use any endpoint provided by this package. Each function requires as its first argument an object containing your access token. ex:
 
 ```ts
-const authorization = await exchangeCodeForAccessToken(accessCode);
+const authorization = await exchangeAccessCodeForAuthTokens(accessCode);
 
 // This returns a list of all the games you've earned trophies for.
 const userTitlesResponse = await getUserTitles(
@@ -107,8 +99,8 @@ Click the function names to open their complete docs on the docs site.
 
 ### Authentication
 
-- [`exchangeCodeForAccessToken()`](https://psn-api.achievements.app/api-docs/authentication#exchangecodeforaccesstoken) - Exchange your access code for access and refresh tokens.
-- [`exchangeNpssoForCode()`](https://psn-api.achievements.app/api-docs/authentication#exchangenpssoforcode) - Exchange your NPSSO for an access code.
+- [`exchangeAccessCodeForAuthTokens()`](https://psn-api.achievements.app/api-docs/authentication#exchangeaccesscodeforauthtokens) - Exchange your access code for access and refresh tokens.
+- [`exchangeNpssoForAccessCode()`](https://psn-api.achievements.app/api-docs/authentication#exchangenpssoforaccesscode) - Exchange your NPSSO for an access code.
 - [`exchangeRefreshTokenForAuthTokens()`](https://psn-api.achievements.app/api-docs/authentication#exchangerefreshtokenforauthtokens) - Get a new access token using your refresh token (bypassing the need to constantly auth with your NPSSO).
 
 ### Search
@@ -123,6 +115,9 @@ Click the function names to open their complete docs on the docs site.
   of `accountId` values present on a target account's friends list.
 - [`getBasicPresence()`](https://psn-api.achievements.app/api-docs/users#getbasicpresence) - Get a user's basic presence
   information.
+- [`getUserRegion()`](https://psn-api.achievements.app/api-docs/users#getuserregion) - Get a user's region information based on their username.
+- [`getProfileShareableLink()`](https://psn-api.achievements.app/api-docs/users#getprofileshareablelink) - Get a shareable link and QR code for a user's profile.
+- [`getAccountDevices()`](https://psn-api.achievements.app/api-docs/users#getaccountdevices) - Get a list of devices associated with the account (PS5, PS4, PS3, PSVita).
 
 ### Trophies
 
@@ -132,7 +127,10 @@ Click the function names to open their complete docs on the docs site.
 - [`getUserTrophiesEarnedForTitle()`](https://psn-api.achievements.app/api-docs/user-trophies#getusertrophiesearnedfortitle) - Retrieve the earned status of trophies for a user from either a single or all trophy groups in a title.
 - [`getUserTrophyGroupEarningsForTitle()`](https://psn-api.achievements.app/api-docs/user-trophies#getusertrophygroupearningsfortitle) - Get a summary of trophies earned for a user broken down by trophy group within a title.
 - [`getUserTrophyProfileSummary()`](https://psn-api.achievements.app/api-docs/user-trophies#getusertrophyprofilesummary) - Retrieve an overall summary of the number of trophies earned for a user broken down by type.
+- [`getUserTrophiesForSpecificTitle()`](https://psn-api.achievements.app/api-docs/user-trophies#getUserTrophiesForSpecificTitle) - Retrieve a summary of the trophies earned by a user for specific titles.
 - [`getRecentlyPlayedGames()`](https://psn-api.achievements.app/api-docs/users#getrecentlyplayedgames) - Retrieve a list of recently played games for the user associated with the access token provided to this function.
+- [`getPurchasedGames()`](https://psn-api.achievements.app/api-docs/users#getpurchasedgames) - Retrieve purchased games for the user associated with the access token. Returns only PS4 and PS5 games.
+- [`getUserPlayedGames()`](https://psn-api.achievements.app/api-docs/users#getuserplayedgames) - Retrieve a list of played games and playtime info (ordered by recency) associated with a user (either from token or external if privacy settings allow).
 
 ## Examples
 
@@ -173,6 +171,13 @@ This project is not intended to be used for spam or abuse. Please use this proje
       <td align="center" valign="top" width="14.28%"><a href="https://evanshortiss.com"><img src="https://avatars.githubusercontent.com/u/1303687?v=4?s=100" width="100px;" alt="Evan Shortiss"/><br /><sub><b>Evan Shortiss</b></sub></a><br /><a href="https://github.com/achievements-app/psn-api/commits?author=evanshortiss" title="Code">💻</a> <a href="https://github.com/achievements-app/psn-api/commits?author=evanshortiss" title="Documentation">📖</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/JenCrawford"><img src="https://avatars.githubusercontent.com/u/12951917?v=4?s=100" width="100px;" alt="crawfordj"/><br /><sub><b>crawfordj</b></sub></a><br /><a href="https://github.com/achievements-app/psn-api/commits?author=JenCrawford" title="Code">💻</a> <a href="https://github.com/achievements-app/psn-api/commits?author=JenCrawford" title="Documentation">📖</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://hartaithan.github.io/"><img src="https://avatars.githubusercontent.com/u/62736094?v=4?s=100" width="100px;" alt="Hartaithan."/><br /><sub><b>Hartaithan.</b></sub></a><br /><a href="https://github.com/achievements-app/psn-api/commits?author=Hartaithan" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://lamarcke.github.io"><img src="https://avatars.githubusercontent.com/u/23425058?v=4?s=100" width="100px;" alt="Cássio Lamarck"/><br /><sub><b>Cássio Lamarck</b></sub></a><br /><a href="https://github.com/achievements-app/psn-api/commits?author=Lamarcke" title="Code">💻</a> <a href="https://github.com/achievements-app/psn-api/commits?author=Lamarcke" title="Documentation">📖</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/Dev-R"><img src="https://avatars.githubusercontent.com/u/83784102?v=4?s=100" width="100px;" alt="R"/><br /><sub><b>R</b></sub></a><br /><a href="https://github.com/achievements-app/psn-api/commits?author=Dev-R" title="Code">💻</a> <a href="https://github.com/achievements-app/psn-api/commits?author=Dev-R" title="Documentation">📖</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://www.july.icu/"><img src="https://avatars.githubusercontent.com/u/26817261?v=4?s=100" width="100px;" alt="July"/><br /><sub><b>July</b></sub></a><br /><a href="https://github.com/achievements-app/psn-api/commits?author=JxJuly" title="Code">💻</a> <a href="https://github.com/achievements-app/psn-api/commits?author=JxJuly" title="Documentation">📖</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/silmarillenschnaps"><img src="https://avatars.githubusercontent.com/u/200592732?v=4?s=100" width="100px;" alt="silmarillenschnaps"/><br /><sub><b>silmarillenschnaps</b></sub></a><br /><a href="https://github.com/achievements-app/psn-api/commits?author=silmarillenschnaps" title="Documentation">📖</a></td>
+    </tr>
+    <tr>
+      <td align="center" valign="top" width="14.28%"><a href="http://instagram.com/bartektricks"><img src="https://avatars.githubusercontent.com/u/22157966?v=4?s=100" width="100px;" alt="Bartek"/><br /><sub><b>Bartek</b></sub></a><br /><a href="https://github.com/achievements-app/psn-api/commits?author=bartektricks" title="Code">💻</a> <a href="https://github.com/achievements-app/psn-api/commits?author=bartektricks" title="Documentation">📖</a></td>
     </tr>
   </tbody>
 </table>

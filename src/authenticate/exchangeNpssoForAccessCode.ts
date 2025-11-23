@@ -5,15 +5,15 @@ import { AUTH_BASE_URL } from "./AUTH_BASE_URL";
 /**
  *
  * @param npssoToken Your NPSSO token, retrieved from https://ca.account.sony.com/api/v1/ssocookie
- * @returns An access code, which can be exchanged for an access token using `exchangeCodeForAccessToken`.
+ * @returns An access code, which can be exchanged for an access token using `exchangeAccessCodeForAuthTokens`.
  * @example
  * ```ts
- * const code = await exchangeNpssoForCode("myNpssoToken");
+ * const code = await exchangeNpssoForAccessCode("myNpssoToken");
  *
  * console.log(code) // --> "v3.XXXXXX"
  * ```
  */
-export const exchangeNpssoForCode = async (
+export const exchangeNpssoForAccessCode = async (
   npssoToken: string
 ): Promise<string> => {
   const queryString = new URLSearchParams({
@@ -53,3 +53,8 @@ export const exchangeNpssoForCode = async (
 
   return redirectParams.get("code") as string;
 };
+
+/**
+ * @deprecated Use `exchangeNpssoForAccessCode` instead. This alias will be removed in a future version.
+ */
+export const exchangeNpssoForCode = exchangeNpssoForAccessCode;

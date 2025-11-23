@@ -101,6 +101,55 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "Lamarcke",
+      "name": "Cássio Lamarck",
+      "avatar_url": "https://avatars.githubusercontent.com/u/23425058?v=4",
+      "profile": "https://lamarcke.github.io",
+      "contributions": [
+        "code",
+        "doc"
+      ]
+    },
+    {
+      "login": "Dev-R",
+      "name": "R",
+      "avatar_url": "https://avatars.githubusercontent.com/u/83784102?v=4",
+      "profile": "https://github.com/Dev-R",
+      "contributions": [
+        "code",
+        "doc"
+      ]
+    },
+    {
+      "login": "JxJuly",
+      "name": "July",
+      "avatar_url": "https://avatars.githubusercontent.com/u/26817261?v=4",
+      "profile": "https://www.july.icu/",
+      "contributions": [
+        "code",
+        "doc"
+      ]
+    },
+    {
+      "login": "silmarillenschnaps",
+      "name": "silmarillenschnaps",
+      "avatar_url": "https://avatars.githubusercontent.com/u/200592732?v=4",
+      "profile": "https://github.com/silmarillenschnaps",
+      "contributions": [
+        "doc"
+      ]
+    },
+    {
+      "login": "bartektricks",
+      "name": "Bartek",
+      "avatar_url": "https://avatars.githubusercontent.com/u/22157966?v=4",
+      "profile": "http://instagram.com/bartektricks",
+      "contributions": [
+        "code",
+        "doc"
+      ]
     }
   ],
   "contributorsPerLine": 7,

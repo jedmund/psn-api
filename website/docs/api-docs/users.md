@@ -106,6 +106,49 @@ The following properties are contained within a `profile` object that is returne
 
 ---
 
+## getProfileShareableLink
+
+A call to this function will retrieve a shareable link and QR code for a PlayStation Network user's profile. The shareable link allows others to view the user's public profile information, and the QR code provides a convenient way to share the profile via scanning.
+
+If the user's profile cannot be found or accessed, an error will be thrown.
+
+### Examples
+
+#### Get a shareable link for a user's profile
+
+```ts
+import { getProfileShareableLink } from "psn-api";
+
+const shareableLink = await getProfileShareableLink(
+  authorization,
+  "962157895908076652"
+);
+
+console.log(shareableLink.shareUrl); // Direct link to the profile
+console.log(shareableLink.shareImageUrl); // QR code image URL
+```
+
+### Returns
+
+| Name                       | Type     | Description                                                                                      |
+| :------------------------- | :------- | :----------------------------------------------------------------------------------------------- |
+| `shareUrl`                 | `string` | The shareable URL for the user's PlayStation profile that can be shared with others.             |
+| `shareImageUrl`            | `string` | The URL to a shareable image (QR code) representing the user's profile for social media sharing. |
+| `shareImageUrlDestination` | `string` | The destination URL that the shareable image links to when accessed via the shared image.        |
+
+### Parameters
+
+| Name            | Type                                                                  | Description                                                                                                                                                                                                                               |
+| :-------------- | :-------------------------------------------------------------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `authorization` | [`AuthorizationPayload`](/api-docs/data-models/authorization-payload) | An object that must contain an `accessToken`. See [this page](/authentication/authenticating-manually) for how to get one.                                                                                                                |
+| `accountId`     | `string`                                                              | The account whose shareable profile link is being retrieved. Use `"me"` for the authenticating account. To find a user's `accountId`, the [`makeUniversalSearch()`](/api-docs/universal-search#makeuniversalsearch) function can be used. |
+
+### Source
+
+[user/getProfileShareableLink.ts](https://github.com/achievements-app/psn-api/blob/main/src/user/getProfileShareableLink.ts)
+
+---
+
 ## getUserFriendsAccountIds
 
 A call to this function will retrieve the list of friended `accountId` values associated with the given `accountId` parameter. If the friends list cannot be retrieved (either due to the given `accountId` not existing or due to the user's privacy settings), an error will be thrown.
@@ -164,7 +207,7 @@ const userFriendsAccountIds = await getUserFriendsAccountIds(
 These are the possible values that can be in the `options` object (the third parameter of the function).
 
 | Name     | Type     | Description                                  |
-|:---------|:---------|:---------------------------------------------|
+| :------- | :------- | :------------------------------------------- |
 | `limit`  | `number` | Limit the number of trophies returned.       |
 | `offset` | `number` | Return trophy data from this result onwards. |
 
@@ -194,10 +237,10 @@ const response = await getBasicPresence(authorization, "xelnia");
 The following properties are contained within a `basicPresence` object that is returned.
 
 | Name                  | Type                                                                                                                                                     | Description                                                                                                                                     |
-|:----------------------|:---------------------------------------------------------------------------------------------------------------------------------------------------------|:------------------------------------------------------------------------------------------------------------------------------------------------|
+| :-------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------- | :---------------------------------------------------------------------------------------------------------------------------------------------- |
 | `availability`        | `"unavailable" or "availableToPlay"`                                                                                                                     | The account's current availability.                                                                                                             |
 | `lastAvailableDate`   | `string`                                                                                                                                                 | The last date the account was available, if it's currently unavailable                                                                          |
-| `primaryPlatformInfo` | `{ onlineStatus: "online" or "offline"; platform: "ps4" or "PS5"; lastOnlineDate: string;}`                                                              | Details of the accpunt's primary platform, current status (online or offline), platform type (ps4 or PS5) and date the platform was last online |
+| `primaryPlatformInfo` | `{ onlineStatus: "online" or "offline"; platform: "ps4" or "PS5"; lastOnlineDate: string;}`                                                              | Details of the account's primary platform, current status (online or offline), platform type (ps4 or PS5) and date the platform was last online |
 | `lastOnlineDate`      | `string`                                                                                                                                                 | Last online date if the account is currently offline                                                                                            |
 | `onlineStatus`        | `"offline" or "online"`                                                                                                                                  | Account's current online status                                                                                                                 |
 | `platform`            | `string`                                                                                                                                                 | If the account is online, it's current platform                                                                                                 |
@@ -206,7 +249,7 @@ The following properties are contained within a `basicPresence` object that is r
 ### Parameters
 
 | Name            | Type                                                                  | Description                                                                                                                                                                                                                 |
-|:----------------|:----------------------------------------------------------------------|:----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| :-------------- | :-------------------------------------------------------------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `authorization` | [`AuthorizationPayload`](/api-docs/data-models/authorization-payload) | An object that must contain an `accessToken`. See [this page](/authentication/authenticating-manually) for how to get one.                                                                                                  |
 | `accountId`     | `string`                                                              | The account whose presence is being retrieved. Use `"me"` for the authenticating account. To find a user's `accountId`, the [`makeUniversalSearch()`](/api-docs/universal-search#makeuniversalsearch) function can be used. |
 
@@ -256,3 +299,234 @@ These are the possible values that can be in the `options` object (the second pa
 ### Source
 
 [graphql/getRecentlyPlayedGames.ts](https://github.com/achievements-app/psn-api/blob/main/src/graphql/getRecentlyPlayedGames.ts)
+
+---
+
+## getPurchasedGames
+
+A call to this function will retrieve purchased games for the user associated with the `accessToken` in
+the provided [AuthorizationPayload](/api-docs/data-models/authorization-payload). This endpoint returns only PS4 and PS5 games.
+
+### Examples
+
+#### Get purchased games
+
+```ts
+import { getPurchasedGames } from "psn-api";
+
+const purchasedGames = await getPurchasedGames(authorization, {
+  platform: ["ps4", "ps5"],
+  size: 24,
+  sortBy: "ACTIVE_DATE",
+  sortDirection: "desc"
+});
+```
+
+#### Get purchased games with specific filters
+
+```ts
+import { getPurchasedGames } from "psn-api";
+
+const purchasedGames = await getPurchasedGames(authorization, {
+  isActive: true,
+  platform: ["ps5"],
+  size: 50,
+  start: 0,
+  sortBy: "ACTIVE_DATE",
+  sortDirection: "asc",
+  membership: "PS_PLUS"
+});
+```
+
+### Returns
+
+| Name                                 | Type                                                    | Description              |
+| :----------------------------------- | :------------------------------------------------------ | :----------------------- |
+| `data.purchasedTitlesRetrieve.games` | [PurchasedGame](/api-docs/data-models/purchased-game)[] | List of purchased games. |
+
+### Parameters
+
+| Name            | Type                                                                  | Description                                                                                                                |
+| :-------------- | :-------------------------------------------------------------------- | :------------------------------------------------------------------------------------------------------------------------- |
+| `authorization` | [`AuthorizationPayload`](/api-docs/data-models/authorization-payload) | An object that must contain an `accessToken`. See [this page](/authentication/authenticating-manually) for how to get one. |
+
+### Options
+
+These are the possible values that can be in the `options` object (the second parameter of the function).
+
+| Name            | Type                                             | Description                                                    |
+| :-------------- | :----------------------------------------------- | :------------------------------------------------------------- |
+| `isActive`      | `boolean`                                        | Whether to include only active games. Defaults to `true`.      |
+| `platform`      | <code>("ps4" &#124; "ps5")[]</code>              | Array of platforms to filter by. Defaults to `["ps4", "ps5"]`. |
+| `size`          | `number`                                         | Number of games to retrieve per page. Defaults to `24`.        |
+| `start`         | `number`                                         | Starting offset for pagination. Defaults to `0`.               |
+| `sortBy`        | `"ACTIVE_DATE"`                                  | Field to sort by. Defaults to `"ACTIVE_DATE"`.                 |
+| `sortDirection` | <code>"asc" &#124; "desc"</code>                 | Sort direction. Defaults to `"desc"`.                          |
+| `membership`    | [`Membership`](/api-docs/data-models/membership) | Filter by membership type.                                     |
+
+### Source
+
+[graphql/getPurchasedGames.ts](https://github.com/achievements-app/psn-api/blob/main/src/graphql/getPurchasedGames.ts)
+
+---
+
+## getUserPlayedGames
+
+A call to this function will retrieve a list of games (ordered by recently played) for a user associated with the `accountId` provided.  
+This is similar to [`getRecentlyPlayedGames()`](https://psn-api.achievements.app/api-docs/users#getrecentlyplayedgames),
+but allows querying other user's games (if their privacy settings allow it) and returns detailed user playtime info.
+
+### Examples
+
+```ts
+import { getUserPlayedGames } from "psn-api";
+
+// May fail if user privacy settings prohibit listing
+const userPlayedGames = await getUserPlayedGames(
+  authorization,
+  "2984038888603282554"
+);
+
+// Retrieves list of games from user associated with `authorization.accessToken`.
+const myPlayedGames = await getUserPlayedGames(authorization, "me");
+```
+
+### Returns
+
+| Name                                 | Type                                                              | Description                                                                                                                                                |
+| :----------------------------------- | :---------------------------------------------------------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `titles`                             | `object[]`                                                        | Individual object for each title returned.                                                                                                                 |
+| `titles.titleId`                     | `string`                                                          | Id for the specific version of the game played by the user. <br /> **Example:** `"CUSA01433_00"`                                                           |
+| `titles.name`                        | `string`                                                          | Name of the game. <br /> **Example:** `"Rocket League®"`                                                                                                   |
+| `titles.localizedName`               | `string`                                                          | Name of the game (localized). <br /> **Example:** `"Rocket League®"`                                                                                       |
+| `titles.imageUrl`                    | `string`                                                          | URL for the game icon. <br /> **Example:** `"https://image..."`                                                                                            |
+| `titles.localizedImageUrl`           | `string`                                                          | URL for the game icon (localized). <br /> **Example:** `"https://image..."`                                                                                |
+| `titles.category`                    | `"ps4_game" \| "ps5_native_game" \| "pspc_game" \| "unknown"`     | Type of game. <br /> **Example:** `"ps4_game"`                                                                                                             |
+| `titles.service`                     | `"none" \| "none_purchased" \| "ps_plus"`                         | Is the game owned outright, or via a service entitlement. <br /> **Example:** `"none"`                                                                     |
+| `titles.playCount`                   | `number`                                                          | Number of times the game has been played. <br /> **Example:** `100`                                                                                        |
+| `titles.concept`                     | `object`                                                          | The concept is a single identifier for the various versions of a game.                                                                                     |
+| `titles.concept.id`                  | `number`                                                          | Identifier for the concept. <br /> **Example:** `10009763`                                                                                                 |
+| `titles.concept.titleIds`            | `string[]`                                                        | Various Title Ids for this game. <br /> **Example:** `["PPSA20599_00", "PPSA20549_00"]`                                                                    |
+| `titles.concept.name`                | `string`                                                          | Name of the game concept. <br /> **Example:** `"Zenless Zone Zero"`                                                                                        |
+| `titles.concept.media`               | `{ audios: any[]; videos: any[]; images: Image[] }`               | Media related to the game concept, including images, videos, and audios.                                                                                   |
+| `titles.concept.media.images`        | `{ url: string; format: string; type: string }[]`                 | Array of images associated with the game concept.                                                                                                          |
+| `titles.concept.media.images.url`    | `string`                                                          | URL of the image. <br /> **Example:** `"https://image.api.playstation.com/vulcan/ap/rnd/202405/2210/4126b58375cb32a51dfdbfde8637daae8b971c3b10c3bc80.jpg"` |
+| `titles.concept.media.images.format` | `string`                                                          | Format of the image. <br /> **Example:** `"UNKNOWN"`                                                                                                       |
+| `titles.concept.media.images.type`   | `string`                                                          | Type of the image. <br /> **Example:** `"FOUR_BY_THREE_BANNER"`                                                                                            |
+| `titles.media`                       | `{ screenshotUrl?: string; [key: string]: string \| undefined; }` | This object contains various URLs for screenshots and other media associated with the game. <br /> **Example:** `{ screenshotUrl: "https://image..." }`    |
+| `titles.media.screenshotUrl`         | `string`                                                          | Screenshot URL. <br /> **Example:** `"https://image..."`                                                                                                   |
+| `titles.firstPlayedDateTime`         | `string`                                                          | Date the game was first played. <br /> **Example:** `"2015-07-10T19:40:19Z"`                                                                               |
+| `titles.lastPlayedDateTime`          | `string`                                                          | Date the game was most recently played. <br /> **Example:** `"2024-08-03T19:28:27.12Z"`                                                                    |
+| `titles.playDuration`                | `string`                                                          | Time played accurate to 1 second. <br /> **Example:** `"PT228H56M33S"`                                                                                     |
+| `totalItemCount`                     | `number`                                                          | The total number of game titles for this account. <br /> **Example:** `300`                                                                                |
+| `nextOffset`                         | `number`                                                          | Pagination info. <br /> **Example:** `20`                                                                                                                  |
+| `previousOffset`                     | `number`                                                          | Pagination info. <br /> **Example:** `299`                                                                                                                 |
+
+### Parameters
+
+| Name            | Type                                                                  | Description                                                                                                                                                                                                                  |
+| :-------------- | :-------------------------------------------------------------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `authorization` | [`AuthorizationPayload`](/api-docs/data-models/authorization-payload) | An object that must contain an `accessToken`. See [this page](/authentication/authenticating-manually) for how to get one.                                                                                                   |
+| `accountId`     | `string`                                                              | The account whose game list is being retrieved. Use `"me"` for the authenticating account. To find a user's `accountId`, the [`makeUniversalSearch()`](/api-docs/universal-search#makeuniversalsearch) function can be used. |
+
+### Options
+
+These are the possible values that can be in the `options` object (the third parameter of the function).
+
+| Name         | Type     | Description                                                                                          |
+| :----------- | :------- | :--------------------------------------------------------------------------------------------------- |
+| `categories` | `string` | Comma separed list of platforms. <br /> **Example:** "ps4_game, ps5_native_game, pspc_game, unknown" |
+| `limit`      | `number` | Limit the number of games returned.                                                                  |
+| `offset`     | `number` | Return game list data from this result onwards.                                                      |
+
+### Source
+
+[user/getUserPlayedGames.ts](https://github.com/achievements-app/psn-api/blob/main/src/user/getUserPlayedGames.ts)
+
+---
+
+## getUserRegion
+
+A call to this function will retrieve the region information of a PlayStation Network user based on their username. The region is extracted from the base64-encoded npId in the user's profile and returned as an object containing both the two-letter country code (ISO 3166-1 alpha-2) and the full country name.
+
+### Examples
+
+#### Get a user's region
+
+```ts
+import { getUserRegion } from "psn-api";
+
+const region = await getUserRegion(authorization, "xelnia");
+console.log(region); // { code: "US", name: "United States" }
+```
+
+#### Get a user's region with a specific locale
+
+```ts
+import { getUserRegion } from "psn-api";
+
+// Get the region name in French
+const region = await getUserRegion(authorization, "xelnia", "fr");
+console.log(region); // { code: "US", name: "États-Unis" }
+```
+
+### Returns
+
+| Name   | Type     | Description                                                         |
+| :----- | :------- | :------------------------------------------------------------------ |
+| `code` | `string` | The two-letter country code (ISO 3166-1 alpha-2) of the user.       |
+| `name` | `string` | The full name of the country in the locale specified (default: en). |
+
+### Parameters
+
+| Name            | Type                                                                                                                             | Description                                                                                                                |
+| :-------------- | :------------------------------------------------------------------------------------------------------------------------------- | :------------------------------------------------------------------------------------------------------------------------- |
+| `authorization` | [`AuthorizationPayload`](/api-docs/data-models/authorization-payload)                                                            | An object that must contain an `accessToken`. See [this page](/authentication/authenticating-manually) for how to get one. |
+| `userName`      | `string`                                                                                                                         | The username for the user whose region you want to determine.                                                              |
+| `locales`       | [`Intl.LocalesArgument`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl#locales_argument) | Optional. A string with a BCP 47 language tag, or an array of such strings. Defaults to ['en'] (English) if not specified. |
+
+### Source
+
+[user/getUserRegion.ts](https://github.com/achievements-app/psn-api/blob/main/src/user/getUserRegion.ts)
+
+---
+
+## getAccountDevices
+
+A call to this function will retrieve the list of devices the client is logged into. This includes information about PlayStation consoles (PS5, PS4, PS3) and handheld devices (PSVita) that are associated with the account.
+
+### Examples
+
+#### Get your account devices
+
+```ts
+import { getAccountDevices } from "psn-api";
+
+const response = await getAccountDevices(authorization);
+```
+
+### Returns
+
+| Name             | Type                                                                          | Description                                |
+| :--------------- | :---------------------------------------------------------------------------- | :----------------------------------------- |
+| `accountId`      | `string`                                                                      | The User's account ID                      |
+| `accountDevices` | [`Array<AccountDevice>`](/api-docs/data-models/account-devices#accountdevice) | List of devices the account is logged into |
+
+For detailed information about the response structure, see [`AccountDevicesResponse`](/api-docs/data-models/account-devices).
+
+### Parameters
+
+| Name            | Type                                                                  | Description                                                                                                                |
+| :-------------- | :-------------------------------------------------------------------- | :------------------------------------------------------------------------------------------------------------------------- |
+| `authorization` | [`AuthorizationPayload`](/api-docs/data-models/authorization-payload) | An object that must contain an `accessToken`. See [this page](/authentication/authenticating-manually) for how to get one. |
+| `options`       | `GetAccountDevicesOptions`                                            | Optional configuration options (see Options section below).                                                                |
+
+### Options
+
+| Name              | Type                                                           | Description                                                                         |
+| :---------------- | :------------------------------------------------------------- | :---------------------------------------------------------------------------------- |
+| `headerOverrides` | [`CallValidHeaders`](/api-docs/data-models/call-valid-headers) | Override the headers in the request to the PSN API, such as to change the language. |
+
+### Source
+
+[user/getAccountDevices.ts](https://github.com/achievements-app/psn-api/blob/main/src/user/getAccountDevices.ts)
